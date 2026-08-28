@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GuidanceRouteImport } from './routes/guidance'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as VersesRouteImport } from './routes/verses'
 import { Route as ApiGuidanceRouteImport } from './routes/api/guidance'
 
@@ -30,6 +31,11 @@ const GuidanceRoute = GuidanceRouteImport.update({
   path: '/guidance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VersesRoute = VersesRouteImport.update({
   id: '/verses',
   path: '/verses',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
+  '/journal': typeof JournalRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
+  '/journal': typeof JournalRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
 }
@@ -60,21 +68,31 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
+  '/journal': typeof JournalRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/guidance' | '/verses' | '/api/guidance'
+  fullPaths:
+    '/' | '/auth' | '/guidance' | '/journal' | '/verses' | '/api/guidance'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/guidance' | '/verses' | '/api/guidance'
-  id: '__root__' | '/' | '/auth' | '/guidance' | '/verses' | '/api/guidance'
+  to: '/' | '/auth' | '/guidance' | '/journal' | '/verses' | '/api/guidance'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/guidance'
+    | '/journal'
+    | '/verses'
+    | '/api/guidance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   GuidanceRoute: typeof GuidanceRoute
+  JournalRoute: typeof JournalRoute
   VersesRoute: typeof VersesRoute
   ApiGuidanceRoute: typeof ApiGuidanceRoute
 }
@@ -102,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuidanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verses': {
       id: '/verses'
       path: '/verses'
@@ -123,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   GuidanceRoute: GuidanceRoute,
+  JournalRoute: JournalRoute,
   VersesRoute: VersesRoute,
   ApiGuidanceRoute: ApiGuidanceRoute,
 }
