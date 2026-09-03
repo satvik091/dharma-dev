@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GuidanceRouteImport } from './routes/guidance'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as MirrorRouteImport } from './routes/mirror'
 import { Route as VersesRouteImport } from './routes/verses'
 import { Route as ApiGuidanceRouteImport } from './routes/api/guidance'
+import { Route as ApiMirrorRouteImport } from './routes/api/mirror'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +38,11 @@ const JournalRoute = JournalRouteImport.update({
   path: '/journal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MirrorRoute = MirrorRouteImport.update({
+  id: '/mirror',
+  path: '/mirror',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VersesRoute = VersesRouteImport.update({
   id: '/verses',
   path: '/verses',
@@ -46,22 +53,31 @@ const ApiGuidanceRoute = ApiGuidanceRouteImport.update({
   path: '/api/guidance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMirrorRoute = ApiMirrorRouteImport.update({
+  id: '/api/mirror',
+  path: '/api/mirror',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
   '/journal': typeof JournalRoute
+  '/mirror': typeof MirrorRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
+  '/api/mirror': typeof ApiMirrorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
   '/journal': typeof JournalRoute
+  '/mirror': typeof MirrorRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
+  '/api/mirror': typeof ApiMirrorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,23 +85,42 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/guidance': typeof GuidanceRoute
   '/journal': typeof JournalRoute
+  '/mirror': typeof MirrorRoute
   '/verses': typeof VersesRoute
   '/api/guidance': typeof ApiGuidanceRoute
+  '/api/mirror': typeof ApiMirrorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/guidance' | '/journal' | '/verses' | '/api/guidance'
+    | '/'
+    | '/auth'
+    | '/guidance'
+    | '/journal'
+    | '/mirror'
+    | '/verses'
+    | '/api/guidance'
+    | '/api/mirror'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/guidance' | '/journal' | '/verses' | '/api/guidance'
+  to:
+    | '/'
+    | '/auth'
+    | '/guidance'
+    | '/journal'
+    | '/mirror'
+    | '/verses'
+    | '/api/guidance'
+    | '/api/mirror'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/guidance'
     | '/journal'
+    | '/mirror'
     | '/verses'
     | '/api/guidance'
+    | '/api/mirror'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,8 +128,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   GuidanceRoute: typeof GuidanceRoute
   JournalRoute: typeof JournalRoute
+  MirrorRoute: typeof MirrorRoute
   VersesRoute: typeof VersesRoute
   ApiGuidanceRoute: typeof ApiGuidanceRoute
+  ApiMirrorRoute: typeof ApiMirrorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JournalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mirror': {
+      id: '/mirror'
+      path: '/mirror'
+      fullPath: '/mirror'
+      preLoaderRoute: typeof MirrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verses': {
       id: '/verses'
       path: '/verses'
@@ -141,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGuidanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mirror': {
+      id: '/api/mirror'
+      path: '/api/mirror'
+      fullPath: '/api/mirror'
+      preLoaderRoute: typeof ApiMirrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -149,8 +200,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   GuidanceRoute: GuidanceRoute,
   JournalRoute: JournalRoute,
+  MirrorRoute: MirrorRoute,
   VersesRoute: VersesRoute,
   ApiGuidanceRoute: ApiGuidanceRoute,
+  ApiMirrorRoute: ApiMirrorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
