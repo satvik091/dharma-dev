@@ -83,16 +83,22 @@ function GuidancePage() {
       let buffer = "";
       let answer = "";
 
-      for (;;) {
+      let finished = false;
+      while (!finished) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
         buffer = lines.pop() ?? "";
         for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (!data || data === "[DONE]") continue;
+          if (!line.startsWith("data:")) continue;
+          const data = line.slice(5).trim();
+          if (!data) continue;
+          if (data === "[DONE]") {
+            finished = true;
+            void reader.cancel().catch(() => {});
+            break;
+          }
           try {
             const delta = JSON.parse(data).delta as string | undefined;
             if (delta) {
@@ -108,6 +114,7 @@ function GuidancePage() {
           }
         }
       }
+
       void persist("assistant", answer);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong";

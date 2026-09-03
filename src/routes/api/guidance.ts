@@ -145,7 +145,7 @@ Never invent a verse number that does not exist. Never give medical or legal adv
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-3.5-flash",
+            model: "google/gemini-3.7-flash",
             temperature: 0.4,
             stream: true,
             messages,
@@ -165,29 +165,52 @@ Never invent a verse number that does not exist. Never give medical or legal adv
 
         const reader = upstream.body.getReader();
         const decoder = new TextDecoder();
-        let buffer = "";
 
         const stream = new ReadableStream({
-          async pull(controller) {
-            const { done, value } = await reader.read();
-            if (done) {
+          async start(controller) {
+            let buffer = "";
+            const finish = () => {
               controller.enqueue(encoder.encode("data: [DONE]\n\n"));
               controller.close();
-              return;
-            }
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() ?? "";
-            for (const line of lines) {
-              if (!line.startsWith("data: ")) continue;
-              const data = line.slice(6).trim();
-              if (data === "[DONE]") continue;
+              reader.cancel().catch(() => {});
+            };
+            try {
+              for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() ?? "";
+                for (const line of lines) {
+                  if (!line.startsWith("data:")) continue;
+                  const data = line.slice(5).trim();
+                  if (!data) continue;
+                  if (data === "[DONE]") {
+                    finish();
+                    return;
+                  }
+                  try {
+                    const parsed = JSON.parse(data);
+                    const choice = parsed.choices?.[0];
+                    const delta = choice?.delta?.content;
+                    if (delta) controller.enqueue(encoder.encode(sseChunk({ delta })));
+                    if (choice?.finish_reason) {
+                      finish();
+                      return;
+                    }
+                  } catch {
+                    /* partial frame, ignore */
+                  }
+                }
+              }
+              finish();
+            } catch (err) {
+              console.error("stream error", err);
               try {
-                const parsed = JSON.parse(data);
-                const delta = parsed.choices?.[0]?.delta?.content;
-                if (delta) controller.enqueue(encoder.encode(sseChunk({ delta })));
+                controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+                controller.close();
               } catch {
-                /* partial frame, ignore */
+                /* already closed */
               }
             }
           },
@@ -195,6 +218,7 @@ Never invent a verse number that does not exist. Never give medical or legal adv
             reader.cancel().catch(() => {});
           },
         });
+
 
         return new Response(stream, {
           headers: {
