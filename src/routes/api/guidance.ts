@@ -145,7 +145,7 @@ Never invent a verse number that does not exist. Never give medical or legal adv
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-3.5-flash",
+            model: "google/gemini-3.7-flash",
             temperature: 0.4,
             stream: true,
             messages,
